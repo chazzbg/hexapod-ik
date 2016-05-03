@@ -1,8 +1,10 @@
 package com.chazz;
 
+import com.chazz.hexapod.Hexapod;
+
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("lol");
+        Hexapod hex = new Hexapod();
     }
 }

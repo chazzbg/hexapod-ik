@@ -536,251 +536,282 @@ public class Hexapod {
         setServoAngles();
     }
 
-    public double getDrXpos() {
-        return drXpos;
-    }
-
-    public void setDrXpos(double drXpos) {
-        this.drXpos = drXpos;
-    }
-
     public double[] getServoAngle() {
         return servoAngle;
     }
 
-    public void setServoAngle(double[] servoAngle) {
+    public Hexapod setServoAngle(double[] servoAngle) {
         this.servoAngle = servoAngle;
+        return this;
     }
 
     public double[] getAngle() {
         return angle;
     }
 
-    public void setAngle(double[] angle) {
+    public Hexapod setAngle(double[] angle) {
         this.angle = angle;
+        return this;
     }
 
     public double[] getLength() {
         return length;
     }
 
-    public void setLength(double[] length) {
+    public Hexapod setLength(double[] length) {
         this.length = length;
+        return this;
     }
 
     public double getFemurAngle() {
         return femurAngle;
     }
 
-    public void setFemurAngle(double femurAngle) {
+    public Hexapod setFemurAngle(double femurAngle) {
         this.femurAngle = femurAngle;
+        return this;
     }
 
     public double getTibiaAngle() {
         return tibiaAngle;
     }
 
-    public void setTibiaAngle(double tibiaAngle) {
+    public Hexapod setTibiaAngle(double tibiaAngle) {
         this.tibiaAngle = tibiaAngle;
+        return this;
     }
 
     public double[] getAngleub() {
         return angleub;
     }
 
-    public void setAngleub(double[] angleub) {
+    public Hexapod setAngleub(double[] angleub) {
         this.angleub = angleub;
+        return this;
     }
 
     public double[] getAnglelb() {
         return anglelb;
     }
 
-    public void setAnglelb(double[] anglelb) {
+    public Hexapod setAnglelb(double[] anglelb) {
         this.anglelb = anglelb;
+        return this;
     }
 
     public double[][] getLegPos() {
         return legPos;
     }
 
-    public void setLegPos(double[][] legPos) {
+    public Hexapod setLegPos(double[][] legPos) {
         this.legPos = legPos;
+        return this;
     }
 
     public double[][] getLegPos1() {
         return legPos1;
     }
 
-    public void setLegPos1(double[][] legPos1) {
+    public Hexapod setLegPos1(double[][] legPos1) {
         this.legPos1 = legPos1;
+        return this;
     }
 
     public double[] getLegAng() {
         return legAng;
     }
 
-    public void setLegAng(double[] legAng) {
+    public Hexapod setLegAng(double[] legAng) {
         this.legAng = legAng;
+        return this;
     }
 
     public double getTime() {
         return time;
     }
 
-    public void setTime(double time) {
+    public Hexapod setTime(double time) {
         this.time = time;
+        return this;
     }
 
     public double getSpeed() {
         return speed;
     }
 
-    public void setSpeed(double speed) {
+    public Hexapod setSpeed(double speed) {
         this.speed = speed;
+        return this;
     }
 
     public double getSmoothSpeed() {
         return smoothSpeed;
     }
 
-    public void setSmoothSpeed(double smoothSpeed) {
+    public Hexapod setSmoothSpeed(double smoothSpeed) {
         this.smoothSpeed = smoothSpeed;
+        return this;
     }
 
     public double getFdf() {
         return fdf;
     }
 
-    public void setFdf(double fdf) {
+    public Hexapod setFdf(double fdf) {
         this.fdf = fdf;
+        return this;
     }
 
     public double getTurning() {
         return turning;
     }
 
-    public void setTurning(double turning) {
+    public Hexapod setTurning(double turning) {
         this.turning = turning;
+        return this;
     }
 
     public double getSmoothTurning() {
         return smoothTurning;
     }
 
-    public void setSmoothTurning(double smoothTurning) {
+    public Hexapod setSmoothTurning(double smoothTurning) {
         this.smoothTurning = smoothTurning;
+        return this;
     }
 
     public double getStandHeight() {
         return standHeight;
     }
 
-    public void setStandHeight(double standHeight) {
+    public Hexapod setStandHeight(double standHeight) {
         this.standHeight = standHeight;
+        return this;
     }
 
     public double getSweepModifier() {
         return sweepModifier;
     }
 
-    public void setSweepModifier(double sweepModifier) {
+    public Hexapod setSweepModifier(double sweepModifier) {
         this.sweepModifier = sweepModifier;
+        return this;
     }
 
     public double getSpeedModifier() {
         return speedModifier;
     }
 
-    public void setSpeedModifier(double speedModifier) {
+    public Hexapod setSpeedModifier(double speedModifier) {
         this.speedModifier = speedModifier;
+        return this;
     }
 
     public double getMaxSweep() {
         return maxSweep;
     }
 
-    public void setMaxSweep(double maxSweep) {
+    public Hexapod setMaxSweep(double maxSweep) {
         this.maxSweep = maxSweep;
+        return this;
     }
 
     public double getSsTime() {
         return ssTime;
     }
 
-    public void setSsTime(double ssTime) {
+    public Hexapod setSsTime(double ssTime) {
         this.ssTime = ssTime;
+        return this;
     }
 
     public boolean isSsRunning() {
         return ssRunning;
     }
 
-    public void setSsRunning(boolean ssRunning) {
+    public Hexapod setSsRunning(boolean ssRunning) {
         this.ssRunning = ssRunning;
+        return this;
     }
 
     public double[] getSsx0() {
         return ssx0;
     }
 
-    public void setSsx0(double[] ssx0) {
+    public Hexapod setSsx0(double[] ssx0) {
         this.ssx0 = ssx0;
+        return this;
     }
 
     public double[] getSsy0() {
         return ssy0;
     }
 
-    public void setSsy0(double[] ssy0) {
+    public Hexapod setSsy0(double[] ssy0) {
         this.ssy0 = ssy0;
+        return this;
     }
 
     public double[] getSsz0() {
         return ssz0;
     }
 
-    public void setSsz0(double[] ssz0) {
+    public Hexapod setSsz0(double[] ssz0) {
         this.ssz0 = ssz0;
+        return this;
+    }
+
+    public double getDrXpos() {
+        return drXpos;
+    }
+
+    public Hexapod setDrXpos(double drXpos) {
+        this.drXpos = drXpos;
+        return this;
     }
 
     public double getDrYpos() {
         return drYpos;
     }
 
-    public void setDrYpos(double drYpos) {
+    public Hexapod setDrYpos(double drYpos) {
         this.drYpos = drYpos;
+        return this;
     }
 
     public double getDrAng() {
         return drAng;
     }
 
-    public void setDrAng(double drAng) {
+    public Hexapod setDrAng(double drAng) {
         this.drAng = drAng;
+        return this;
     }
 
     public boolean isDebug() {
         return debug;
     }
 
-    public void setDebug(boolean debug) {
+    public Hexapod setDebug(boolean debug) {
         this.debug = debug;
+        return this;
     }
 
     public Bezier2D getBezierWalkUp() {
         return bezierWalkUp;
     }
 
-    public void setBezierWalkUp(Bezier2D bezierWalkUp) {
+    public Hexapod setBezierWalkUp(Bezier2D bezierWalkUp) {
         this.bezierWalkUp = bezierWalkUp;
+        return this;
     }
 
     public Bezier2D getBezierWalkDOwn() {
         return bezierWalkDOwn;
     }
 
-    public void setBezierWalkDOwn(Bezier2D bezierWalkDOwn) {
+    public Hexapod setBezierWalkDOwn(Bezier2D bezierWalkDOwn) {
         this.bezierWalkDOwn = bezierWalkDOwn;
+        return this;
     }
 }

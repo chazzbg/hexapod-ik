@@ -29,6 +29,8 @@ package com.chazz.hexapod;
  */
 
 
+import java.util.Arrays;
+
 public class Hexapod {
 
 
@@ -169,6 +171,11 @@ public class Hexapod {
         double absspeed, speedsgn, ssfrac, ssfrac2;
         double cycletime, xpos, ypos;
         Position[] target = new Position[3];
+
+        for (int i =0; i < target.length; i++){
+            target[i] = new Position();
+        }
+
         Position zpos = new Position();
         double legraise;
         double turn_dist = 0, rpos, maxdist;
@@ -352,7 +359,12 @@ public class Hexapod {
         int ii;
         Position[] fkangles = new Position[3];
         Position[] fkpos = new Position[3];
-
+        for (int i =0; i < fkangles.length; i++){
+            fkangles[i] = new Position();
+        }
+        for (int i =0; i < fkpos.length; i++){
+            fkpos[i] = new Position();
+        }
         // initialize
         ssTime = 0.0;
         ssRunning = true;
@@ -401,6 +413,12 @@ public class Hexapod {
         double targetr, targetz, targetang;
         Position[] fkpos = new Position[3];
         Position[] fkangles = new Position[3];
+        for (int i =0; i < fkpos.length; i++){
+            fkpos[i] = new Position();
+        }
+        for (int i =0; i < fkangles.length; i++){
+            fkangles[i] = new Position();
+        }
         double[][] J = new double[2][2];
         double[][] inv = new double[2][2];
         double[] delta = new double[2];
@@ -813,5 +831,12 @@ public class Hexapod {
     public Hexapod setBezierWalkDOwn(Bezier2D bezierWalkDOwn) {
         this.bezierWalkDOwn = bezierWalkDOwn;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Hexapod{" +
+                "servoAngle=" + Arrays.toString(servoAngle) +
+                '}';
     }
 }

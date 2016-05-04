@@ -1,13 +1,13 @@
 package com.chazz.hexapod;
 
-public class Position {
-    private double pos;
+class Position {
+    private float pos;
 
-    public double getPos() {
+    float getPos() {
         return pos;
     }
 
-    public void setPos(double pos) {
+    void setPos(float pos) {
         this.pos = pos;
     }
 }

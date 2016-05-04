@@ -5,25 +5,25 @@ import java.util.Vector;
 
 class Bezier2D {
 
-    private Vector<Double> xpos = new Vector<Double>();
-    private Vector<Double> ypos = new Vector<Double>();
+    private Vector<Float> xpos = new Vector<Float>();
+    private Vector<Float> ypos = new Vector<Float>();
 
     Bezier2D () {}
 
-    void addPoint (double x, double y)
+    void addPoint (float x, float y)
     {
         xpos.add(x);
         ypos.add(y);
     }
 
     // t must be [0:1]
-    void getPos (double t, Position xret, Position yret)
+    void getPos (float t, Position xret, Position yret)
     {
         int ii, ij, npoints;
-        double[] x, y;
+        float[] x, y;
         npoints = xpos.size();
-        x = new double [npoints];
-        y = new double [npoints];
+        x = new float [npoints];
+        y = new float [npoints];
         // load with current points
         for (ii=0; ii<npoints; ii++)
         {
@@ -36,8 +36,8 @@ class Bezier2D {
         {
             for (ij=0; ij<npoints-ii-1; ij++)
             {
-                x[ij] = (1.0-t)*x[ij] + t*x[ij+1];
-                y[ij] = (1.0-t)*y[ij] + t*y[ij+1];
+                x[ij] = (1.0f-t)*x[ij] + t*x[ij+1];
+                y[ij] = (1.0f-t)*y[ij] + t*y[ij+1];
             }
         }
 

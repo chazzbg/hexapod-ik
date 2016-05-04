@@ -35,33 +35,33 @@ public class Hexapod {
 
 
     // both sets of angles are relative to leg root and leg angle
-    private double[] servoAngle = new double[18]; // in degrees, 0 to 300 or so (subject to more constraint)
-    private double[] angle = new double[18]; // in radians, direction and offset corrected
+    private float[] servoAngle = new float[18]; // in degrees, 0 to 300 or so (subject to more constraint)
+    private float[] angle = new float[18]; // in radians, direction and offset corrected
      // Hexapod body
-    private double[] length = new double[3]; // length of coxa, femur, tibia
-    private double femurAngle;
-    private double tibiaAngle;
-    private double[] angleub = new double[3];
-    private double[] anglelb = new double[3]; // angle bounds
-    private double[][] legPos = new double[6][3]; // root of leg in xyz
-    private double[][] legPos1 = new double[6][3]; // default resting position of leg
-    private double[] legAng = new double[6]; // root angle of leg
+    private float[] length = new float[3]; // length of coxa, femur, tibia
+    private float femurAngle;
+    private float tibiaAngle;
+    private float[] angleub = new float[3];
+    private float[] anglelb = new float[3]; // angle bounds
+    private float[][] legPos = new float[6][3]; // root of leg in xyz
+    private float[][] legPos1 = new float[6][3]; // default resting position of leg
+    private float[] legAng = new float[6]; // root angle of leg
      // for walking
-    private double time, speed;
-    private double smoothSpeed, fdf;
-    private double turning, smoothTurning;
-    private double standHeight;
-    private double sweepModifier, speedModifier, maxSweep;
+    private float time, speed;
+    private float smoothSpeed, fdf;
+    private float turning, smoothTurning;
+    private float standHeight;
+    private float sweepModifier, speedModifier, maxSweep;
      // for safestand
-    private double ssTime;
+    private float ssTime;
     private boolean ssRunning;
-    private double[] ssx0 = new double[6]; // initial positions
-    private double[] ssy0 = new double[6]; // initial positions
-    private double[] ssz0 = new double[6]; // initial positions
+    private float[] ssx0 = new float[6]; // initial positions
+    private float[] ssy0 = new float[6]; // initial positions
+    private float[] ssz0 = new float[6]; // initial positions
      // dead-reckoning
-    private double drXpos;
-    private double drYpos;
-    private double drAng;
+    private float drXpos;
+    private float drYpos;
+    private float drAng;
     private boolean debug;
     // for walking
     private Bezier2D bezierWalkUp = new Bezier2D(), bezierWalkDOwn = new Bezier2D();
@@ -82,18 +82,18 @@ public class Hexapod {
 
 
         // init constants for each leg
-        length[0] = 5.26; // in cm
-        length[1] = 6.53;
-        length[2] = 13.2;
-        femurAngle = 12.3*Constants.DEGTORAD; // old: 11.5, 9.53
-        tibiaAngle = 40.0*Constants.DEGTORAD; // old_47.3, 45.0
+        length[0] = 5.26f; // in cm
+        length[1] = 6.53f;
+        length[2] = 13.2f;
+        femurAngle = 12.3f*Constants.DEGTORAD; // old: 11.5, 9.53
+        tibiaAngle = 40.0f*Constants.DEGTORAD; // old_47.3, 45.0
 
-        anglelb[0] = 75.0*Constants.DEGTORAD;
-        angleub[0] = 245.*Constants.DEGTORAD;
-        anglelb[1] = 55.0*Constants.DEGTORAD;
-        angleub[1] = 250.*Constants.DEGTORAD;
-        anglelb[2] = 40.0*Constants.DEGTORAD;
-        angleub[2] = 215.*Constants.DEGTORAD;
+        anglelb[0] = 75.0f*Constants.DEGTORAD;
+        angleub[0] = 245.f*Constants.DEGTORAD;
+        anglelb[1] = 55.0f*Constants.DEGTORAD;
+        angleub[1] = 250.f*Constants.DEGTORAD;
+        anglelb[2] = 40.0f*Constants.DEGTORAD;
+        angleub[2] = 215.f*Constants.DEGTORAD;
         for (ii=0; ii<3; ii++)
         {
             anglelb[ii] -= 150.*Constants.DEGTORAD; // because servos are straight at 150 degrees
@@ -102,11 +102,11 @@ public class Hexapod {
             //angleub[ii] *= 0.75;
         }
 
-        legPos[0][0] = 12.50;
-        legPos[0][1] = 5.95;
-        legPos[0][2] = 1.82;
-        legPos[1][0] = 0.0;
-        legPos[1][1] = 9.957;
+        legPos[0][0] = 12.50f;
+        legPos[0][1] = 5.95f;
+        legPos[0][2] = 1.82f;
+        legPos[1][0] = 0.0f;
+        legPos[1][1] = 9.957f;
         legPos[1][2] = legPos[0][2];
         // symmetry
         legPos[2][0] = -legPos[0][0];
@@ -123,53 +123,53 @@ public class Hexapod {
         legPos[5][2] = legPos[0][2];
 
         // which way do the coxa servos point
-        legAng[0] = 45.0*Constants.DEGTORAD;
-        legAng[1] = 90.0*Constants.DEGTORAD;
-        legAng[2] = 135.*Constants.DEGTORAD;
-        legAng[3] =-45.*Constants.DEGTORAD;
-        legAng[4] =-90.0*Constants.DEGTORAD;
-        legAng[5] =-135.0*Constants.DEGTORAD;
+        legAng[0] = 45.0f*Constants.DEGTORAD;
+        legAng[1] = 90.0f*Constants.DEGTORAD;
+        legAng[2] = 135.f*Constants.DEGTORAD;
+        legAng[3] =-45.f*Constants.DEGTORAD;
+        legAng[4] =-90.0f*Constants.DEGTORAD;
+        legAng[5] =-135.0f*Constants.DEGTORAD;
 
         // default target for each leg
         for (ii=0; ii<6; ii++)
         {
-            legPos1[ii][0] = legPos[ii][0] + 12.0 * Math.cos(legAng[ii]);
-            legPos1[ii][1] = legPos[ii][1] + 12.0 * Math.sin(legAng[ii]);
-            legPos1[ii][2] = -10.0;
+            legPos1[ii][0] = (float) (legPos[ii][0] + 12.0f * Math.cos(legAng[ii]));
+            legPos1[ii][1] = (float) (legPos[ii][1] + 12.0f * Math.sin(legAng[ii]));
+            legPos1[ii][2] = -10.0f;
         }
 
         // initialize bezier curve gait
         // goes from +-1 in x and 0 to 1 in z
-        bezierWalkUp.addPoint(-0.83775,0);
-        bezierWalkUp.addPoint(-1.11701,0);
-        bezierWalkUp.addPoint(-1.39626,0);
-        bezierWalkUp.addPoint(0,3.2);
-        bezierWalkUp.addPoint(1.39626,0);
-        bezierWalkUp.addPoint(1.11701,0);
-        bezierWalkUp.addPoint(0.83775,0);
+        bezierWalkUp.addPoint(-0.83775f,0);
+        bezierWalkUp.addPoint(-1.11701f,0);
+        bezierWalkUp.addPoint(-1.39626f,0);
+        bezierWalkUp.addPoint(0,3.2f);
+        bezierWalkUp.addPoint(1.39626f,0);
+        bezierWalkUp.addPoint(1.11701f,0);
+        bezierWalkUp.addPoint(0.83775f,0);
 
-        bezierWalkDOwn.addPoint(0.83775,0);
-        bezierWalkDOwn.addPoint(-0.83775,0);
+        bezierWalkDOwn.addPoint(0.83775f,0);
+        bezierWalkDOwn.addPoint(-0.83775f,0);
 
 //        hexlock.lock();
-        speed = 0.0;
-        turning = 0.0;
-        standHeight = 2.0;
-//        hexlock.unlock();
-        smoothSpeed = 0.0;
-        time = 0.0;
-        fdf = 0.50;
+        speed = 0.0f;
+        turning = 0.0f;
+        standHeight = 2.0f;
+//        hexlock.unlock()f;
+        smoothSpeed = 0.0f;
+        time = 0.0f;
+        fdf = 0.50f;
 
-        drXpos = 0.0;
-        drYpos = 0.0;
-        drAng = 0.0;
+        drXpos = 0.0f;
+        drYpos = 0.0f;
+        drAng = 0.0f;
     }
 
-    public synchronized void step (double dt)
+    public synchronized void step (float dt)
     {
         int ii, modt;
-        double absspeed, speedsgn, ssfrac, ssfrac2;
-        double cycletime, xpos, ypos;
+        float absspeed, speedsgn, ssfrac, ssfrac2;
+        float cycletime, xpos, ypos;
         Position[] target = new Position[3];
 
         for (int i =0; i < target.length; i++){
@@ -177,19 +177,19 @@ public class Hexapod {
         }
 
         Position zpos = new Position();
-        double legraise;
-        double turn_dist = 0, rpos, maxdist;
+        float legraise;
+        float turn_dist = 0, rpos, maxdist;
         Position thtpos = new Position();
-        double dist, tht0, turn_step, speed_step;
+        float dist, tht0, turn_step, speed_step;
 
         // clamp speed and turning, just in case
 //        hexlock.lock();
         if (speed > Constants.MAX_SPEED) speed = Constants.MAX_SPEED;
         if (speed < -Constants.MAX_SPEED) speed = -Constants.MAX_SPEED;
-        if (turning > 1.0) turning = 1.0;
-        if (turning < -1.0) turning = -1.0;
-        if (standHeight < -2.0) standHeight = -2.0;
-        if (standHeight > 2.0) standHeight = 2.0;
+        if (turning > 1.0) turning = 1.0f;
+        if (turning < -1.0) turning = -1.0f;
+        if (standHeight < -2.0) standHeight = -2.0f;
+        if (standHeight > 2.0) standHeight = 2.0f;
 
         // make sure speed doesnt change too rapidly
         speed_step = -(smoothSpeed - speed);
@@ -208,25 +208,25 @@ public class Hexapod {
 
         // to control walking, modify speed and turning
         absspeed = Math.abs(smoothSpeed);
-        speedsgn = 1.0;
-        if (smoothSpeed < 0.0) speedsgn = -1.0;
+        speedsgn = 1.0f;
+        if (smoothSpeed < 0.0) speedsgn = -1.0f;
 
         // walking speed is influenced by leg sweep and movement speed
-        legraise = 1.0;
+        legraise = 1.0f;
         if (absspeed < 0.05)
-            legraise = absspeed/0.05;
+            legraise = absspeed/0.05f;
         if (absspeed < 0.2)
         {
-            sweepModifier = absspeed*0.8/0.2;
-            speedModifier = 0.25;
+            sweepModifier = absspeed*0.8f/0.2f;
+            speedModifier = 0.25f;
         } else if (absspeed < 0.8) {
-            sweepModifier = 0.8;
+            sweepModifier = 0.8f;
             speedModifier = absspeed/ sweepModifier;
         } else if (absspeed < 1.0) {
             sweepModifier = absspeed;
-            speedModifier = 1.0;
+            speedModifier = 1.0f;
         } else {
-            sweepModifier = 1.0;
+            sweepModifier = 1.0f;
             speedModifier = absspeed;
         }
         speedModifier *= speedsgn;
@@ -238,39 +238,39 @@ public class Hexapod {
             for (ii=0; ii<6; ii++)
             {
                 // compute final target
-                target[0].setPos(legPos[ii][0]*1.5);
-                if (ii == 0 || ii == 2) target[1].setPos(14.0);
-                if (ii == 1) target[1].setPos(18.0);
-                if (ii == 3 || ii == 5) target[1].setPos(-14.0);
-                if (ii == 4) target[1].setPos(-18.0);
+                target[0].setPos(legPos[ii][0]*1.5f);
+                if (ii == 0 || ii == 2) target[1].setPos(14.0f);
+                if (ii == 1) target[1].setPos(18.0f);
+                if (ii == 3 || ii == 5) target[1].setPos(-14.0f);
+                if (ii == 4) target[1].setPos(-18.0f);
                 target[0].setPos(legPos1[ii][0]);
                 target[1].setPos(legPos1[ii][1]);
-                target[2].setPos(-10. + standHeight);
+                target[2].setPos(-10.f + standHeight);
                 // given final target, turn into current target
                 if (ssfrac < 0.5)
                 {
-                    ssfrac2 = ssfrac*2.0;
+                    ssfrac2 = ssfrac*2.0f;
                     if (ii % 2 == 0)
                     {
                         target[0].setPos(ssx0[ii] + ssfrac2*(target[0].getPos()-ssx0[ii]));
                         target[1].setPos(ssy0[ii] + ssfrac2*(target[1].getPos()-ssy0[ii]));
-                        target[2].setPos(ssz0[ii] + ssfrac2*(target[2].getPos()-ssz0[ii]) +
-                                2.0*Math.pow(Math.sin(3.1416*ssfrac2),2));
+                        target[2].setPos((float) (ssz0[ii] + ssfrac2*(target[2].getPos()-ssz0[ii]) +
+                                                        2.0*Math.pow(Math.sin(3.1416*ssfrac2),2)));
                     } else {
                         target[0].setPos(ssx0[ii]);
                         target[1].setPos(ssy0[ii]);
                         target[2].setPos(ssz0[ii]);
                     }
                 } else {
-                    ssfrac2 = (ssfrac-0.5)*2.0;
+                    ssfrac2 = (ssfrac-0.5f)*2.0f;
                     if (ii % 2 == 0)
                     {
                         // don't modify targets
                     } else {
                         target[0].setPos(ssx0[ii] + ssfrac2*(target[0].getPos()-ssx0[ii]));
                         target[1].setPos(ssy0[ii] + ssfrac2*(target[1].getPos()-ssy0[ii]));
-                        target[2].setPos(ssz0[ii] + ssfrac2*(target[2].getPos()-ssz0[ii]) +
-                                2.0*Math.pow(Math.sin(3.1416*ssfrac2),2));
+                        target[2].setPos((float) (ssz0[ii] + ssfrac2*(target[2].getPos()-ssz0[ii]) +
+                                                        2.0*Math.pow(Math.sin(3.1416*ssfrac2),2)));
                     }
                 }
                 IKSolve(ii,target);
@@ -278,26 +278,26 @@ public class Hexapod {
             if (ssTime > Constants.SS_DURATION)
             {
                 ssRunning = false;
-                ssTime = 0.0;
+                ssTime = 0.0f;
             }
         } else {
 
 
             // based on current turning, compute turning math
             if (Math.abs(smoothTurning) <= Constants.TURN_TOL)
-                turn_dist = Math.tan((1.0-Constants.TURN_TOL)*3.1416/2.0)*50.;
+                turn_dist = (float) (Math.tan((1.0-Constants.TURN_TOL)*3.1416/2.0)*50.);
             else if (Math.abs(smoothTurning) > Constants.TURN_TOL)
-                turn_dist = Math.tan((1.0- smoothTurning)*3.1416/2.0)*50.;
+                turn_dist = (float) (Math.tan((1.0- smoothTurning)*3.1416/2.0)*50.);
             // compute dist between turn_dist and farthest leg
-            maxdist = 0.0;
+            maxdist = 0.0f;
             for (ii=0; ii<6; ii++)
             {
-                dist = Math.sqrt(Math.pow(legPos1[ii][0],2) + Math.pow(legPos1[ii][1]-turn_dist,2));
+                dist = (float) Math.sqrt(Math.pow(legPos1[ii][0],2) + Math.pow(legPos1[ii][1]-turn_dist,2));
                 if (dist > maxdist) maxdist = dist;
             }
             // each leg can only sweep so much, so use this farthest leg
             // to determine the angle of sweep that every leg must do
-            maxSweep = 8.* sweepModifier /maxdist;
+            maxSweep = 8.f* sweepModifier /maxdist;
             if (turn_dist < 0.0) maxSweep = -maxSweep;
             // maxSweep is the angle of sweep for every leg, in radians
 
@@ -323,26 +323,26 @@ public class Hexapod {
                 // where is this leg in the cycle of stepping?
                 // the 0.5*ii is to completely de-sync legs
                 // the other part is to adjust it more
-                cycletime = Math.IEEEremainder(time + 0.5*ii + (legPos[ii][0]- legPos[0][0])*0.0125, 1.0);
+                cycletime = (float) Math.IEEEremainder(time + 0.5*ii + (legPos[ii][0]- legPos[0][0])*0.0125, 1.0);
 
                 // use bezier curve to either be up or down
                 // bezierWalkDOwn goes between +/- 0.83775
                 if (cycletime < fdf) bezierWalkDOwn.getPos(cycletime/fdf, thtpos, zpos);
-                else bezierWalkUp.getPos((cycletime-fdf)/(1.-fdf), thtpos, zpos);
+                else bezierWalkUp.getPos((float) ((cycletime-fdf)/(1.-fdf)), thtpos, zpos);
                 // convert thtpos into angle?
                 thtpos.setPos(thtpos.getPos()* maxSweep);
 
                 // convert rpos to xpos,ypos
-                dist = Math.sqrt(Math.pow(legPos1[ii][0],2) + Math.pow(legPos1[ii][1]-turn_dist,2));
-                tht0 = Math.atan2(legPos1[ii][1]-turn_dist, legPos1[ii][0]);
-                xpos = dist*Math.cos(thtpos.getPos()+tht0);
-                ypos = turn_dist + dist*Math.sin(thtpos.getPos()+tht0);
+                dist = (float) Math.sqrt(Math.pow(legPos1[ii][0],2) + Math.pow(legPos1[ii][1]-turn_dist,2));
+                tht0 = (float) Math.atan2(legPos1[ii][1]-turn_dist, legPos1[ii][0]);
+                xpos = (float) (dist*Math.cos(thtpos.getPos()+tht0));
+                ypos = (float) (turn_dist + dist*Math.sin(thtpos.getPos()+tht0));
 
                 // set up the IK target
                 target[0].setPos(xpos);
                 target[1].setPos(ypos);
-                target[2].setPos(-10.0 + zpos.getPos()*3.0*legraise + standHeight);
-                if (standHeight < 0.0) target[2].setPos(target[2].getPos()-1.7*zpos.getPos()* standHeight);
+                target[2].setPos((float) (-10.0 + zpos.getPos()*3.0*legraise + standHeight));
+                if (standHeight < 0.0) target[2].setPos((float) (target[2].getPos()-1.7*zpos.getPos()* standHeight));
 
 
                 // perform IK solve
@@ -366,7 +366,7 @@ public class Hexapod {
             fkpos[i] = new Position();
         }
         // initialize
-        ssTime = 0.0;
+        ssTime = 0.0f;
         ssRunning = true;
         // store FK leg positions
         for (ii=0; ii<6; ii++)
@@ -386,9 +386,9 @@ public class Hexapod {
         int ii;
         for (ii=0; ii<6; ii++)
         {
-            angle[ii*3] = (servoAngle[ii*3]-150.)*Constants.DEGTORAD;
-            angle[ii*3+1] = (servoAngle[ii*3+1]-150.)*Constants.DEGTORAD;
-            angle[ii*3+2] = (servoAngle[ii*3+2]-150.)*Constants.DEGTORAD;
+            angle[ii*3] = (float) ((servoAngle[ii*3]-150.)*Constants.DEGTORAD);
+            angle[ii*3+1] = (float) ((servoAngle[ii*3+1]-150.)*Constants.DEGTORAD);
+            angle[ii*3+2] = (float) ((servoAngle[ii*3+2]-150.)*Constants.DEGTORAD);
         }
     }
 
@@ -397,20 +397,20 @@ public class Hexapod {
         int ii;
         for (ii=0; ii<6; ii++)
         {
-            servoAngle[ii*3] = angle[ii*3]*Constants.RADTODEG + 150.;
-            servoAngle[ii*3+1] = angle[ii*3+1]*Constants.RADTODEG + 150.;
-            servoAngle[ii*3+2] = angle[ii*3+2]*Constants.RADTODEG + 150.;
+            servoAngle[ii*3] = (float) (angle[ii*3]*Constants.RADTODEG + 150.);
+            servoAngle[ii*3+1] = (float) (angle[ii*3+1]*Constants.RADTODEG + 150.);
+            servoAngle[ii*3+2] = (float) (angle[ii*3+2]*Constants.RADTODEG + 150.);
         }
     }
 
-    // target is a double[3] giving absolute position
+    // target is a float[3] giving absolute position
 // return whether or not the solver was successful
     private boolean IKSolve(int leg, Position[] target)
     {
         int iter;
         boolean converged;
-        double diff;
-        double targetr, targetz, targetang;
+        float diff;
+        float targetr, targetz, targetang;
         Position[] fkpos = new Position[3];
         Position[] fkangles = new Position[3];
         for (int i =0; i < fkpos.length; i++){
@@ -419,16 +419,16 @@ public class Hexapod {
         for (int i =0; i < fkangles.length; i++){
             fkangles[i] = new Position();
         }
-        double[][] J = new double[2][2];
-        double[][] inv = new double[2][2];
-        double[] delta = new double[2];
-        double[] p = new double[2];
-        double posr, posz, ang1, ang2, det;
+        float[][] J = new float[2][2];
+        float[][] inv = new float[2][2];
+        float[] delta = new float[2];
+        float[] p = new float[2];
+        float posr, posz, ang1, ang2, det;
 
         // convert absolute position to polar around leg root
         targetz = target[2].getPos() - legPos[leg][2];
-        targetr = Math.sqrt(Math.pow(target[0].getPos()- legPos[leg][0],2) + Math.pow(target[1].getPos()- legPos[leg][1],2));
-        targetang = Math.atan2(target[1].getPos()- legPos[leg][1],target[0].getPos()- legPos[leg][0]) - legAng[leg]; // atan2 [-pi:pi]
+        targetr = (float) Math.sqrt(Math.pow(target[0].getPos()- legPos[leg][0],2) + Math.pow(target[1].getPos()- legPos[leg][1],2));
+        targetang = (float) (Math.atan2(target[1].getPos()- legPos[leg][1],target[0].getPos()- legPos[leg][0]) - legAng[leg]); // atan2 [-pi:pi]
 
         // easy part: can the coxa servo get to the right angle?
         if (targetang > angleub[0] || targetang < anglelb[0]) return false;
@@ -440,13 +440,13 @@ public class Hexapod {
         fkangles[0].setPos(angle[leg*3]); // already solved for
         // starting point is influenced by actual current point
         // but this makes it safer in case the leg has somehow gone out of bounds
-        fkangles[1].setPos(angle[leg*3+1]*0.5);
-        fkangles[2].setPos(angle[leg*3+2]*0.5);
+        fkangles[1].setPos((float) (angle[leg*3+1]*0.5));
+        fkangles[2].setPos((float) (angle[leg*3+2]*0.5));
         FKSolve(leg, fkangles, fkpos);
         posz = fkpos[2].getPos() - legPos[leg][2];
-        posr = Math.sqrt(Math.pow(fkpos[0].getPos()- legPos[leg][0],2) + Math.pow(fkpos[1].getPos()- legPos[leg][1],2));
+        posr = (float) Math.sqrt(Math.pow(fkpos[0].getPos()- legPos[leg][0],2) + Math.pow(fkpos[1].getPos()- legPos[leg][1],2));
 
-        diff = Math.sqrt(Math.pow(targetr-posr,2) + Math.pow(targetz-posz,2));
+        diff = (float) Math.sqrt(Math.pow(targetr-posr,2) + Math.pow(targetz-posz,2));
         // ITERATE
         converged = false;
         for (iter=0; iter<Constants.MAXITER && !converged; iter++)
@@ -456,20 +456,20 @@ public class Hexapod {
             p[1] = targetz - posz;
             ang1 = fkangles[1].getPos()- femurAngle;
             ang2 = fkangles[2].getPos()- tibiaAngle;
-            J[0][0] = -length[1]*Math.sin(ang1) - length[2]*Math.sin(ang1+ang2); // dr/dang1
-            J[1][0] = -length[2]*Math.sin(ang1+ang2); // dr/dang2
-            J[0][1] = length[1]*Math.cos(ang1) + length[2]*Math.cos(ang1+ang2); // dz/dang2
-            J[1][1] = length[2]*Math.cos(ang1+ang2); // dz/dang2
+            J[0][0] = (float) (-length[1]*Math.sin(ang1) - length[2]*Math.sin(ang1+ang2)); // dr/dang1
+            J[1][0] = (float) (-length[2]*Math.sin(ang1+ang2)); // dr/dang2
+            J[0][1] = (float) (length[1]*Math.cos(ang1) + length[2]*Math.cos(ang1+ang2)); // dz/dang2
+            J[1][1] = (float) (length[2]*Math.cos(ang1+ang2)); // dz/dang2
             // compute inverse
-            det = 1.0/(J[0][0]*J[1][1]-J[0][1]*J[1][0]);
+            det = (float) (1.0/(J[0][0]*J[1][1]-J[0][1]*J[1][0]));
             inv[0][0] = J[1][1]*det;
             inv[1][0] = -J[1][0]*det;
             inv[0][1] = -J[0][1]*det;
             inv[1][1] = J[0][0]*det;
             delta[0] = p[0]*inv[0][0] + p[1]*inv[0][1];
             delta[1] = p[0]*inv[1][0] + p[1]*inv[1][1];
-            fkangles[1].setPos(fkangles[1].getPos()+delta[0]*0.5);
-            fkangles[2].setPos(fkangles[2].getPos()+delta[1]*0.5);
+            fkangles[1].setPos((float) (fkangles[1].getPos()+delta[0]*0.5));
+            fkangles[2].setPos((float) (fkangles[2].getPos()+delta[1]*0.5));
             // enforce bounds
             if (fkangles[1].getPos() >= angleub[1]) {
                 fkangles[1].setPos(angleub[1] - Constants.ANGEPS);
@@ -490,9 +490,9 @@ public class Hexapod {
             // FK
             FKSolve(leg, fkangles, fkpos);
             posz = fkpos[2].getPos() - legPos[leg][2];
-            posr = Math.sqrt(Math.pow(fkpos[0].getPos()- legPos[leg][0],2) + Math.pow(fkpos[1].getPos()- legPos[leg][1],2));
+            posr = (float) Math.sqrt(Math.pow(fkpos[0].getPos()- legPos[leg][0],2) + Math.pow(fkpos[1].getPos()- legPos[leg][1],2));
             // convergence criteria
-            diff = Math.sqrt(Math.pow(targetr-posr,2) + Math.pow(targetz-posz,2));
+            diff = (float) Math.sqrt(Math.pow(targetr-posr,2) + Math.pow(targetz-posz,2));
             //cout << iter << " " << diff << " " << posr << " " << posz << endl;
             if (diff < Constants.TOLERANCE) converged = true; // 1 mm tolerance
         }
@@ -510,20 +510,20 @@ public class Hexapod {
     }
 
     // forward kinematics in absolute coordinate system
-// given a flat[3] angles, compute position and put in double[3] pos
+// given a flat[3] angles, compute position and put in float[3] pos
 // input angles are in radians and are offset properly
     private void FKSolve(int leg, Position[] angles, Position[] pos)
     {
-        double r, ang0, ang1, ang2;
+        float r, ang0, ang1, ang2;
 
         ang0 = angles[0].getPos()+ legAng[leg];
         ang1 = angles[1].getPos()- femurAngle;
         ang2 = angles[2].getPos()- tibiaAngle;
 
-        r = length[0] + length[1]*Math.cos(ang1) + length[2]*Math.cos(ang1+ang2);
-        pos[0].setPos(legPos[leg][0] + r*Math.cos(ang0));
-        pos[1].setPos(legPos[leg][1] + r*Math.sin(ang0));
-        pos[2].setPos(legPos[leg][2] + length[1]*Math.sin(ang1) + length[2]*Math.sin(ang1+ang2));
+        r = (float) (length[0] + length[1]*Math.cos(ang1) + length[2]*Math.cos(ang1+ang2));
+        pos[0].setPos((float) (legPos[leg][0] + r*Math.cos(ang0)));
+        pos[1].setPos((float) (legPos[leg][1] + r*Math.sin(ang0)));
+        pos[2].setPos((float) (legPos[leg][2] + length[1]*Math.sin(ang1) + length[2]*Math.sin(ang1+ang2)));
     }
 
     public void stand ()
@@ -532,9 +532,9 @@ public class Hexapod {
         Position[] target = new Position[3];
         for (ii=0; ii<6; ii++)
         {
-            target[0].setPos(legPos[ii][0] + 10.0*Math.cos(legAng[ii]));
-            target[1].setPos(legPos[ii][1] + 10.0*Math.sin(legAng[ii]));
-            target[2].setPos(-10.0);
+            target[0].setPos((float) (legPos[ii][0] + 10.0*Math.cos(legAng[ii])));
+            target[1].setPos((float) (legPos[ii][1] + 10.0*Math.sin(legAng[ii])));
+            target[2].setPos(-10.0f);
             IKSolve(ii,target);
         }
         setServoAngles();
@@ -546,199 +546,199 @@ public class Hexapod {
         Position[] target = new Position[3];
         for (ii=0; ii<6; ii++)
         {
-            target[0].setPos(legPos[ii][0] + 10.0*Math.cos(legAng[ii]));
-            target[1].setPos(legPos[ii][1] + 10.0*Math.sin(legAng[ii]));
-            target[2].setPos(-5.0);
+            target[0].setPos((float) (legPos[ii][0] + 10.0*Math.cos(legAng[ii])));
+            target[1].setPos((float) (legPos[ii][1] + 10.0*Math.sin(legAng[ii])));
+            target[2].setPos(-5.0f);
             IKSolve(ii,target);
         }
         setServoAngles();
     }
 
-    public double[] getServoAngle() {
+    public float[] getServoAngle() {
         return servoAngle;
     }
 
-    public Hexapod setServoAngle(double[] servoAngle) {
+    public Hexapod setServoAngle(float[] servoAngle) {
         this.servoAngle = servoAngle;
         return this;
     }
 
-    public double[] getAngle() {
+    public float[] getAngle() {
         return angle;
     }
 
-    public Hexapod setAngle(double[] angle) {
+    public Hexapod setAngle(float[] angle) {
         this.angle = angle;
         return this;
     }
 
-    public double[] getLength() {
+    public float[] getLength() {
         return length;
     }
 
-    public Hexapod setLength(double[] length) {
+    public Hexapod setLength(float[] length) {
         this.length = length;
         return this;
     }
 
-    public double getFemurAngle() {
+    public float getFemurAngle() {
         return femurAngle;
     }
 
-    public Hexapod setFemurAngle(double femurAngle) {
+    public Hexapod setFemurAngle(float femurAngle) {
         this.femurAngle = femurAngle;
         return this;
     }
 
-    public double getTibiaAngle() {
+    public float getTibiaAngle() {
         return tibiaAngle;
     }
 
-    public Hexapod setTibiaAngle(double tibiaAngle) {
+    public Hexapod setTibiaAngle(float tibiaAngle) {
         this.tibiaAngle = tibiaAngle;
         return this;
     }
 
-    public double[] getAngleub() {
+    public float[] getAngleub() {
         return angleub;
     }
 
-    public Hexapod setAngleub(double[] angleub) {
+    public Hexapod setAngleub(float[] angleub) {
         this.angleub = angleub;
         return this;
     }
 
-    public double[] getAnglelb() {
+    public float[] getAnglelb() {
         return anglelb;
     }
 
-    public Hexapod setAnglelb(double[] anglelb) {
+    public Hexapod setAnglelb(float[] anglelb) {
         this.anglelb = anglelb;
         return this;
     }
 
-    public double[][] getLegPos() {
+    public float[][] getLegPos() {
         return legPos;
     }
 
-    public Hexapod setLegPos(double[][] legPos) {
+    public Hexapod setLegPos(float[][] legPos) {
         this.legPos = legPos;
         return this;
     }
 
-    public double[][] getLegPos1() {
+    public float[][] getLegPos1() {
         return legPos1;
     }
 
-    public Hexapod setLegPos1(double[][] legPos1) {
+    public Hexapod setLegPos1(float[][] legPos1) {
         this.legPos1 = legPos1;
         return this;
     }
 
-    public double[] getLegAng() {
+    public float[] getLegAng() {
         return legAng;
     }
 
-    public Hexapod setLegAng(double[] legAng) {
+    public Hexapod setLegAng(float[] legAng) {
         this.legAng = legAng;
         return this;
     }
 
-    public double getTime() {
+    public float getTime() {
         return time;
     }
 
-    public Hexapod setTime(double time) {
+    public Hexapod setTime(float time) {
         this.time = time;
         return this;
     }
 
-    public double getSpeed() {
+    public float getSpeed() {
         return speed;
     }
 
-    public Hexapod setSpeed(double speed) {
+    public Hexapod setSpeed(float speed) {
         this.speed = speed;
         return this;
     }
 
-    public double getSmoothSpeed() {
+    public float getSmoothSpeed() {
         return smoothSpeed;
     }
 
-    public Hexapod setSmoothSpeed(double smoothSpeed) {
+    public Hexapod setSmoothSpeed(float smoothSpeed) {
         this.smoothSpeed = smoothSpeed;
         return this;
     }
 
-    public double getFdf() {
+    public float getFdf() {
         return fdf;
     }
 
-    public Hexapod setFdf(double fdf) {
+    public Hexapod setFdf(float fdf) {
         this.fdf = fdf;
         return this;
     }
 
-    public double getTurning() {
+    public float getTurning() {
         return turning;
     }
 
-    public Hexapod setTurning(double turning) {
+    public Hexapod setTurning(float turning) {
         this.turning = turning;
         return this;
     }
 
-    public double getSmoothTurning() {
+    public float getSmoothTurning() {
         return smoothTurning;
     }
 
-    public Hexapod setSmoothTurning(double smoothTurning) {
+    public Hexapod setSmoothTurning(float smoothTurning) {
         this.smoothTurning = smoothTurning;
         return this;
     }
 
-    public double getStandHeight() {
+    public float getStandHeight() {
         return standHeight;
     }
 
-    public Hexapod setStandHeight(double standHeight) {
+    public Hexapod setStandHeight(float standHeight) {
         this.standHeight = standHeight;
         return this;
     }
 
-    public double getSweepModifier() {
+    public float getSweepModifier() {
         return sweepModifier;
     }
 
-    public Hexapod setSweepModifier(double sweepModifier) {
+    public Hexapod setSweepModifier(float sweepModifier) {
         this.sweepModifier = sweepModifier;
         return this;
     }
 
-    public double getSpeedModifier() {
+    public float getSpeedModifier() {
         return speedModifier;
     }
 
-    public Hexapod setSpeedModifier(double speedModifier) {
+    public Hexapod setSpeedModifier(float speedModifier) {
         this.speedModifier = speedModifier;
         return this;
     }
 
-    public double getMaxSweep() {
+    public float getMaxSweep() {
         return maxSweep;
     }
 
-    public Hexapod setMaxSweep(double maxSweep) {
+    public Hexapod setMaxSweep(float maxSweep) {
         this.maxSweep = maxSweep;
         return this;
     }
 
-    public double getSsTime() {
+    public float getSsTime() {
         return ssTime;
     }
 
-    public Hexapod setSsTime(double ssTime) {
+    public Hexapod setSsTime(float ssTime) {
         this.ssTime = ssTime;
         return this;
     }
@@ -752,56 +752,56 @@ public class Hexapod {
         return this;
     }
 
-    public double[] getSsx0() {
+    public float[] getSsx0() {
         return ssx0;
     }
 
-    public Hexapod setSsx0(double[] ssx0) {
+    public Hexapod setSsx0(float[] ssx0) {
         this.ssx0 = ssx0;
         return this;
     }
 
-    public double[] getSsy0() {
+    public float[] getSsy0() {
         return ssy0;
     }
 
-    public Hexapod setSsy0(double[] ssy0) {
+    public Hexapod setSsy0(float[] ssy0) {
         this.ssy0 = ssy0;
         return this;
     }
 
-    public double[] getSsz0() {
+    public float[] getSsz0() {
         return ssz0;
     }
 
-    public Hexapod setSsz0(double[] ssz0) {
+    public Hexapod setSsz0(float[] ssz0) {
         this.ssz0 = ssz0;
         return this;
     }
 
-    public double getDrXpos() {
+    public float getDrXpos() {
         return drXpos;
     }
 
-    public Hexapod setDrXpos(double drXpos) {
+    public Hexapod setDrXpos(float drXpos) {
         this.drXpos = drXpos;
         return this;
     }
 
-    public double getDrYpos() {
+    public float getDrYpos() {
         return drYpos;
     }
 
-    public Hexapod setDrYpos(double drYpos) {
+    public Hexapod setDrYpos(float drYpos) {
         this.drYpos = drYpos;
         return this;
     }
 
-    public double getDrAng() {
+    public float getDrAng() {
         return drAng;
     }
 
-    public Hexapod setDrAng(double drAng) {
+    public Hexapod setDrAng(float drAng) {
         this.drAng = drAng;
         return this;
     }
